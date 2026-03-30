@@ -2,18 +2,19 @@ const express = require("express");
 const http = require("http");
 const { Server } = require("socket.io");
 const cors = require("cors");
+import { io } from "socket.io-client";
 
+const socket = io("https://meeting-project-m008q0sj5-zakaullahs-projects-ea8fa81a.vercel.app/"); // backend URL
 const app = express();
 app.use(cors());
 
 const server = http.createServer(app);
 
-const io = new Server(server, {
-  cors: {
-    origin: "https://meeting-project-m008q0sj5-zakaullahs-projects-ea8fa81a.vercel.app/", // your frontend port
-    methods: ["GET", "POST"],
-  },
-});
+const cors = require("cors");
+app.use(cors({
+  origin: "*", // or your frontend URL
+  methods: ["GET", "POST"]
+}));
 
 io.on("connection", (socket) => {
   console.log("✅ User connected:", socket.id);
