@@ -2,6 +2,7 @@ const express = require("express");
 const http = require("http");
 const { Server } = require("socket.io");
 const cors = require("cors");
+const { OAuth2Client } = require("google-auth-library");
 
 const app = express();
 app.use(cors());
@@ -58,7 +59,7 @@ const client = new OAuth2Client("382324523430-2pe2o55alst71p4oug0b9cgmmvo75mtb.a
 
 app.post("/api/auth/google", async (req, res) => {
   const { token } = req.body;
-
+console.log(token);
   try {
     const ticket = await client.verifyIdToken({
       idToken: token,
