@@ -10,7 +10,7 @@ const server = http.createServer(app);
 
 const io = new Server(server, {
   cors: {
-    origin: "https://recessively-unworried-hiroko.ngrok-free.dev", // your frontend port
+    origin: "https://meeting-project-m008q0sj5-zakaullahs-projects-ea8fa81a.vercel.app/", // your frontend port
     methods: ["GET", "POST"],
   },
 });
