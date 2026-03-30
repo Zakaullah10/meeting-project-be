@@ -8,11 +8,12 @@ app.use(cors());
 
 const server = http.createServer(app);
 
-const cors = require("cors");
-app.use(cors({
-  origin: "*", // or your frontend URL
-  methods: ["GET", "POST"]
-}));
+const io = new Server(server, {
+  cors: {
+    origin: "*", // your frontend port
+    methods: ["GET", "POST"],
+  },
+});
 
 io.on("connection", (socket) => {
   console.log("✅ User connected:", socket.id);
