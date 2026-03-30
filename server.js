@@ -6,6 +6,7 @@ const { OAuth2Client } = require("google-auth-library");
 
 const app = express();
 app.use(cors());
+app.use(express.json());
 
 const server = http.createServer(app);
 
