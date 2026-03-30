@@ -54,52 +54,30 @@ io.on("connection", (socket) => {
 
 });
 
-// io.on("connection", (socket) => {
-//   console.log("✅ User connected:", socket.id);
+const client = new OAuth2Client("382324523430-2pe2o55alst71p4oug0b9cgmmvo75mtb.apps.googleusercontent.com");
 
-//   socket.on("join-room", (roomId) => {
-//     socket.join(roomId);
-//     const rooms = {}
-//     if (!rooms[roomId]) {
-//       rooms[roomId] = [];
-//     }
+app.post("/api/auth/google", async (req, res) => {
+  const { token } = req.body;
 
-//     // Send existing users to new user
-//     const otherUsers = rooms[roomId];
-//     socket.emit("all-users", otherUsers);
+  try {
+    const ticket = await client.verifyIdToken({
+      idToken: token,
+      audience: "382324523430-2pe2o55alst71p4oug0b9cgmmvo75mtb.apps.googleusercontent.com",
+    });
 
-//     // Add current user to room
-//     rooms[roomId].push(socket.id);
+    const payload = ticket.getPayload();
 
-//     console.log(`📌 ${socket.id} joined room: ${roomId}`);
-//     console.log("👥 Users in room:", rooms[roomId]);
+    const user = {
+      name: payload.name,
+      email: payload.email,
+      picture: payload.picture,
+    };
 
-//     // Notify others
-//     socket.to(roomId).emit("user-joined", socket.id);
-
-//     // 🔁 signaling
-//     socket.on("sending-signal", (data) => {
-//       io.to(data.userId).emit("receiving-signal", {
-//         signal: data.signal,
-//         from: socket.id,
-//       });
-//     });
-
-//     socket.on("returning-signal", (data) => {
-//       io.to(data.to).emit("answer-signal", {
-//         signal: data.signal,
-//         from: socket.id,
-//       });
-//     });
-
-//     socket.on("disconnect", () => {
-//       console.log(`❌ ${socket.id} left room: ${roomId}`);
-
-//       rooms[roomId] = rooms[roomId].filter(id => id !== socket.id);
-
-//       socket.to(roomId).emit("user-left", socket.id);
-//     });
-//   });
-// });
+    // yahan DB me save bhi kar sakte ho
+    res.json(user);
+  } catch (error) {
+    res.status(401).json({ error: "Invalid token" });
+  }
+});
 
 server.listen(8000, () => console.log("🚀 Server running on port 8000"));
