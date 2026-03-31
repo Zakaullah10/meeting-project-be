@@ -60,7 +60,7 @@ const client = new OAuth2Client("382324523430-2pe2o55alst71p4oug0b9cgmmvo75mtb.a
 
 app.post("/api/auth/google", async (req, res) => {
   const { token } = req.body;
-console.log(token);
+
   try {
     const ticket = await client.verifyIdToken({
       idToken: token,
@@ -80,6 +80,43 @@ console.log(token);
   } catch (error) {
     res.status(401).json({ error: "Invalid token" });
   }
+});
+// In-memory user storage
+const users = [];
+
+// ─── Signup Route ─────────────────────
+app.post("/api/auth/signup", async (req, res) => {
+  const { name, email, password } = req.body;
+
+  // Check if user already exists
+  const existingUser = users.find(user => user.email === email);
+  if (existingUser) {
+    return res.status(400).json({ message: "User already exists" });
+  }
+
+  // Hash password
+  const hashedPassword = await bcrypt.hash(password, 10);
+
+  // Save user in memory
+  const newUser = { name, email, password: hashedPassword };
+  users.push(newUser);
+
+  res.status(201).json({
+    message: "User created successfully",
+    user: { name: newUser.name, email: newUser.email }
+  });
+});
+// ─── Login Route (Optional) ───────────
+app.post("/api/auth/login", async (req, res) => {
+  const { email, password } = req.body;
+
+  const user = users.find(u => u.email === email);
+  if (!user) return res.status(400).json({ message: "User not found" });
+
+  const isMatch = await bcrypt.compare(password, user.password);
+  if (!isMatch) return res.status(400).json({ message: "Invalid password" });
+
+  res.status(200).json({ message: `Welcome ${user.name}!` });
 });
 
 server.listen(8000, () => console.log("🚀 Server running on port 8000"));
