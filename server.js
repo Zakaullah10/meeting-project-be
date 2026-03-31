@@ -95,10 +95,10 @@ app.post("/api/auth/signup", async (req, res) => {
   }
 
   // Hash password
-  const hashedPassword = await bcrypt.hash(password, 10);
+  // const hashedPassword = await bcrypt.hash(password, 10);
 
   // Save user in memory
-  const newUser = { name, email, password: hashedPassword };
+  const newUser = { name, email, password: password };
   users.push(newUser);
 
   res.status(201).json({
